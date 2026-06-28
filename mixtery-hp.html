@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixtery — BGM制作 / 同期音源 / Mix&Mastering</title>
+<meta name="description" content="評価4.9・実績700件超。YouTubeショートBGM制作・ライブ同期音源・歌ってみたMixのプロフェッショナルサービス。">
+<style>
+/* =====================================================
+   TOKENS
+   ===================================================== */
+:root {
+  --ink:   #111111;
+  --white: #ffffff;
+  --pale:  #f6f6f6;
+  --rule:  #e2e2e2;
+  --muted: #777777;
+  --accent:#111111;
+  --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+          "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --mono: "SF Mono", "Fira Mono", "Courier New", monospace;
+  --ease: cubic-bezier(.25,.46,.45,.94);
+  --ease-out: cubic-bezier(.16,1,.3,1);
+}
+
+/* =====================================================
+   RESET
+   ===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font);
+  background: var(--white);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  opacity: 0;
+  animation: reveal .9s var(--ease) .05s forwards;
+}
+@keyframes reveal { to { opacity:1; } }
+img { display:block; max-width:100%; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+/* =====================================================
+   UTILITY
+   ===================================================== */
+.mono   { font-family: var(--mono); }
+.muted  { color: var(--muted); }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tag-pill {
+  display: inline-block;
+  padding: .22rem .75rem;
+  border: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+}
+
+/* scroll reveal */
+.sr { opacity:0; transform:translateY(22px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.sr.in { opacity:1; transform:none; }
+.sr-d1.in { transition-delay:.08s; }
+.sr-d2.in { transition-delay:.18s; }
+.sr-d3.in { transition-delay:.28s; }
+.sr-d4.in { transition-delay:.38s; }
+.sr-d5.in { transition-delay:.48s; }
+.sr-d6.in { transition-delay:.58s; }
+.sr-d7.in { transition-delay:.68s; }
+
+/* =====================================================
+   LAYOUT
+   ===================================================== */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 5vw; }
+section { padding: 100px 0; }
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+#hdr {
+  position: fixed; inset: 0 0 auto;
+  z-index: 200;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5vw;
+  background: rgba(255,255,255,.87);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(17,17,17,.07);
+}
+.hdr-logo {
+  font-size: 1.05rem; font-weight: 900; letter-spacing: -.02em;
+}
+.hdr-logo span { font-weight: 300; opacity: .4; }
+
+#nav {
+  display: flex; align-items: center; gap: 2.2rem;
+}
+#nav a {
+  font-size: .78rem; font-weight: 500; letter-spacing: .05em;
+  opacity: .55; transition: opacity .22s;
+}
+#nav a:hover { opacity: 1; }
+
+.hdr-cta {
+  opacity: 1 !important;
+  padding: .42rem 1.1rem;
+  border: 1.5px solid var(--ink);
+  font-weight: 600 !important;
+  transition: background .3s var(--ease), color .3s var(--ease), opacity .22s !important;
+}
+.hdr-cta:hover { background: var(--ink) !important; color: var(--white) !important; }
+
+/* hamburger */
+.hbg { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+.hbg span { width:22px; height:1.5px; background:var(--ink); transition:.3s; }
+@media(max-width:660px){
+  #nav { display:none; flex-direction:column; align-items:flex-start; gap:1.4rem;
+         position:fixed; top:60px; inset-inline:0;
+         background:var(--white); padding:1.8rem 5vw 2.4rem;
+         border-bottom:1px solid var(--rule); }
+  #nav.open { display:flex; }
+  .hbg { display:flex; }
+}
+
+/* =====================================================
+   HERO
+   ===================================================== */
+.hero {
+  min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: 60px;
+  position: relative; overflow: hidden;
+}
+.hero .wrap { position: relative; z-index: 2; }
+
+.hero-kicker {
+  display: flex; align-items: center; gap: .7rem;
+  margin-bottom: 2.2rem;
+}
+.hero-kicker::before {
+  content:''; width:24px; height:1px; background:var(--ink); opacity:.28;
+}
+
+.hero-h1 {
+  font-size: clamp(2.6rem, 7.5vw, 6rem);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -.04em;
+  margin-bottom: 2.4rem;
+  max-width: 14ch;
+}
+.hero-h1 .light {
+  font-weight: 300;
+  font-size: .72em;
+  letter-spacing: -.01em;
+  opacity: .38;
+  display: block;
+  margin-top: .2em;
+}
+
+.hero-sub {
+  font-size: clamp(.85rem, 1.3vw, 1rem);
+  color: var(--muted);
+  max-width: 42ch;
+  line-height: 1.9;
+  margin-bottom: 2.8rem;
+}
+
+.hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem;
+  font-size: .78rem; font-weight: 600; letter-spacing: .09em; text-transform:uppercase;
+  padding: .9rem 1.9rem;
+  border: 1.5px solid var(--ink);
+  transition: background .32s var(--ease), color .32s var(--ease), transform .22s var(--ease);
+}
+.btn-fill { background: var(--ink); color: var(--white); }
+.btn-fill:hover { background: var(--white); color: var(--ink); transform:translateY(-2px); }
+.btn-outline { background: transparent; color: var(--ink); }
+.btn-outline:hover { background: var(--ink); color: var(--white); transform:translateY(-2px); }
+
+.btn svg { transition: transform .28s var(--ease); }
+.btn:hover svg { transform: translateX(3px); }
+
+/* hero badges */
+.hero-badges {
+  display: flex; gap: 2.5rem; flex-wrap:wrap;
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--rule);
+}
+.badge-num {
+  font-size: 1.9rem; font-weight: 900; letter-spacing: -.04em; line-height:1;
+}
+.badge-lbl {
+  font-family: var(--mono);
+  font-size: .6rem; letter-spacing: .14em; color: var(--muted);
+  margin-top: .3rem;
+}
+
+/* waveform */
+.wave-wrap {
+  position: absolute; bottom:0; left:0; right:0;
+  height: 110px; pointer-events:none;
+}
+.wave-path {
+  stroke: var(--ink); stroke-width:1; fill:none; opacity:.055;
+  stroke-dasharray:2400; stroke-dashoffset:2400;
+  animation: drawLine 3.8s var(--ease) .5s forwards;
+}
+@keyframes drawLine { to { stroke-dashoffset:0; } }
+
+/* =====================================================
+   SECTION HEADER SHARED
+   ===================================================== */
+.sec-hdr {
+  display: flex; justify-content:space-between; align-items:flex-start;
+  flex-wrap:wrap; gap:1.5rem 3rem;
+  margin-bottom: 60px;
+}
+.sec-hdr .eyebrow { margin-bottom: .8rem; }
+.sec-title {
+  font-size: clamp(1.9rem,4vw,3rem);
+  font-weight: 900; letter-spacing:-.03em; line-height:1.1;
+}
+.sec-desc {
+  font-size: .88rem; line-height:1.95; color:var(--muted);
+  max-width: 40ch; padding-top:.3rem;
+}
+
+/* =====================================================
+   CATEGORY NAV TABS
+   ===================================================== */
+.cat-tabs {
+  display: flex; gap: 0; border: 1.5px solid var(--ink);
+  margin-bottom: 48px; overflow-x:auto;
+  scrollbar-width:none;
+}
+.cat-tabs::-webkit-scrollbar { display:none; }
+.cat-tab {
+  flex: 1; min-width: max-content;
+  padding: .75rem 1.4rem;
+  font-size: .74rem; font-weight: 600; letter-spacing:.07em; text-transform:uppercase;
+  text-align:center; cursor:pointer;
+  border-right: 1px solid var(--ink);
+  background: var(--white); color:var(--muted);
+  transition: background .28s var(--ease), color .28s var(--ease);
+  user-select:none;
+}
+.cat-tab:last-child { border-right:none; }
+.cat-tab.active { background: var(--ink); color: var(--white); }
+.cat-tab:hover:not(.active) { background: var(--pale); color:var(--ink); }
+
+/* =====================================================
+   PRODUCT PANEL
+   ===================================================== */
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* =====================================================
+   PRODUCT GRID
+   ===================================================== */
+.p-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px;
+  background: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+.p-card {
+  background: var(--white);
+  display: flex; flex-direction:column;
+  transition: background .32s var(--ease), color .32s var(--ease);
+  position: relative;
+}
+.p-card:hover { background: var(--ink); color: var(--white); }
+
+.p-card-badge {
+  position:absolute; top:0; right:0;
+  font-family:var(--mono); font-size:.56rem; letter-spacing:.12em;
+  padding:.28rem .65rem; background:var(--ink); color:var(--white);
+  transition: background .32s var(--ease), color .32s var(--ease);
+}
+.p-card:hover .p-card-badge { background:var(--white); color:var(--ink); }
+.p-card-badge.new { background:#111; }
+.p-card-badge.hot { background:#111; }
+
+.p-inner { padding:2rem 1.8rem; display:flex; flex-direction:column; flex:1; }
+
+.p-type {
+  font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase;
+  border:1px solid currentColor; display:inline-block;
+  padding:.18rem .55rem; margin-bottom:1rem; opacity:.45;
+}
+
+.p-title { font-size:1.05rem; font-weight:800; letter-spacing:-.015em; line-height:1.3; margin-bottom:.9rem; flex:0; }
+
+.p-desc { font-size:.8rem; line-height:1.9; opacity:.58; flex:1; margin-bottom:1.6rem; }
+
+.p-price { font-size:1.6rem; font-weight:900; letter-spacing:-.04em; line-height:1; }
+.p-price-note { font-family:var(--mono); font-size:.58rem; letter-spacing:.1em; opacity:.4; margin:.25rem 0 1.4rem; }
+
+.p-includes { margin-bottom:1.4rem; }
+.p-includes li {
+  font-size:.74rem; line-height:1.8; opacity:.6; padding-left:.9rem; position:relative;
+}
+.p-includes li::before { content:'—'; position:absolute; left:0; opacity:.5; }
+
+.p-link {
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  padding:.7rem 1.2rem; border:1.5px solid currentColor;
+  transition: background .28s var(--ease), color .28s var(--ease);
+  align-self:flex-start;
+  margin-top:auto;
+}
+.p-card:hover .p-link { background:var(--white); color:var(--ink); }
+.p-card:not(:hover) .p-link:hover { background:var(--ink); color:var(--white); }
+
+/* =====================================================
+   SYNC TRACKS — special table layout
+   ===================================================== */
+.track-list { border:1.5px solid var(--ink); }
+.track-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto auto;
+  align-items:center;
+  gap:1rem;
+  padding:1.2rem 1.6rem;
+  border-bottom: 1px solid var(--rule);
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+.track-row:last-child { border-bottom:none; }
+.track-row:hover { background:var(--ink); color:var(--white); }
+
+.track-num { font-family:var(--mono); font-size:.62rem; opacity:.35; }
+.track-title { font-size:.9rem; font-weight:700; letter-spacing:-.01em; }
+.track-artist { font-size:.72rem; opacity:.45; }
+.track-price { font-size:.9rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
+.track-btn {
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.12em; text-transform:uppercase;
+  padding:.3rem .8rem; border:1px solid currentColor;
+  white-space:nowrap;
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+.track-row:hover .track-btn { background:var(--white); color:var(--ink); }
+.track-row:not(:hover) .track-btn:hover { background:var(--ink); color:var(--white); }
+
+@media(max-width:600px){
+  .track-row { grid-template-columns:1.5rem 1fr auto; }
+  .track-artist { display:none; }
+}
+
+/* =====================================================
+   FLOW SECTION
+   ===================================================== */
+.flow-section { background: var(--pale); }
+
+.flow-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap:1px;
+  background: var(--rule); border:1px solid var(--rule);
+}
+@media(max-width:700px){ .flow-grid { grid-template-columns:1fr 1fr; } }
+@media(max-width:400px){ .flow-grid { grid-template-columns:1fr; } }
+
+.flow-card {
+  background: var(--white);
+  padding: 2rem 1.6rem;
+}
+.flow-n {
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.16em; opacity:.3;
+  margin-bottom:1.3rem;
+}
+.flow-icon { font-size:1.6rem; margin-bottom:1rem; }
+.flow-title { font-size:.95rem; font-weight:800; margin-bottom:.5rem; }
+.flow-body { font-size:.78rem; line-height:1.85; color:var(--muted); }
+
+/* =====================================================
+   COUPON BAND
+   ===================================================== */
+.coupon-band {
+  background: var(--ink); color:var(--white);
+  padding:60px 0;
+}
+.coupon-inner {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:2rem;
+}
+.coupon-copy .eyebrow { color:rgba(255,255,255,.35); margin-bottom:.7rem; }
+.coupon-copy h2 { font-size:clamp(1.4rem,3vw,2.2rem); font-weight:900; letter-spacing:-.03em; }
+.coupon-copy p { font-size:.82rem; color:rgba(255,255,255,.55); margin-top:.6rem; max-width:44ch; line-height:1.85; }
+
+.coupon-box {
+  border:1.5px solid rgba(255,255,255,.25);
+  padding:1.8rem 2.4rem; text-align:center; flex-shrink:0;
+}
+.coupon-label { font-family:var(--mono); font-size:.58rem; letter-spacing:.18em; opacity:.45; margin-bottom:.6rem; }
+.coupon-code { font-family:var(--mono); font-size:1.5rem; font-weight:900; letter-spacing:.1em; }
+.coupon-note { font-family:var(--mono); font-size:.58rem; opacity:.35; margin-top:.5rem; }
+
+/* =====================================================
+   ABOUT
+   ===================================================== */
+.about-section { background:var(--white); }
+
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+@media(max-width:760px){ .about-grid { grid-template-columns:1fr; gap:3rem; } }
+
+.stat-block-wrap {
+  display:grid; grid-template-columns:1fr 1fr; gap:1px;
+  background:var(--ink); border:1.5px solid var(--ink);
+}
+.stat-block { background:var(--white); padding:1.8rem 1.5rem; }
+.stat-n { font-size:2.2rem; font-weight:900; letter-spacing:-.04em; line-height:1; }
+.stat-l { font-family:var(--mono); font-size:.6rem; letter-spacing:.13em; color:var(--muted); margin-top:.4rem; }
+
+.about-body h3 { font-size:1.4rem; font-weight:800; letter-spacing:-.02em; margin-bottom:1.1rem; }
+.about-body p { font-size:.85rem; line-height:1.95; color:#444; margin-bottom:.9rem; }
+.about-tags { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:1.6rem; }
+
+/* =====================================================
+   SNS / LINKS
+   ===================================================== */
+.sns-section { background:var(--pale); padding:60px 0; }
+.sns-grid { display:flex; gap:1rem; flex-wrap:wrap; }
+.sns-link {
+  display:inline-flex; align-items:center; gap:.55rem;
+  padding:.65rem 1.3rem; border:1.5px solid var(--rule);
+  font-size:.76rem; font-weight:600; letter-spacing:.06em;
+  background:var(--white); color:var(--ink);
+  transition: border-color .25s, transform .22s var(--ease);
+}
+.sns-link:hover { border-color:var(--ink); transform:translateY(-2px); }
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+footer {
+  border-top:1px solid var(--rule);
+  padding:56px 0 40px;
+}
+.footer-row {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  flex-wrap:wrap; gap:2rem;
+}
+.footer-brand { font-size:1.4rem; font-weight:900; letter-spacing:-.03em; }
+.footer-tagline { font-size:.75rem; color:var(--muted); margin-top:.4rem; }
+.footer-links { display:flex; flex-direction:column; align-items:flex-end; gap:.45rem; }
+@media(max-width:560px){ .footer-links { align-items:flex-start; } }
+.footer-links a { font-size:.75rem; color:var(--muted); transition:color .22s; }
+.footer-links a:hover { color:var(--ink); }
+
+.footer-bottom {
+  margin-top:40px; padding-top:20px; border-top:1px solid var(--rule);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;
+}
+.footer-bottom p { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; color:var(--muted); }
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+@media(prefers-reduced-motion:reduce){
+  *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  body { opacity:1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+     HEADER
+     ====================================================== -->
+<header id="hdr">
+  <a href="#" class="hdr-logo">Mix<span>tery</span></a>
+
+  <div class="hbg" id="hbg" role="button" aria-label="メニュー" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+
+  <nav id="nav">
+    <a href="#services">Services</a>
+    <a href="#flow">Flow</a>
+    <a href="#about">About</a>
+    <a href="https://lin.ee/unixuFG"  class="hdr-cta">LINE で相談</a>
+  </nav>
+</header>
+
+
+<!-- ======================================================
+     HERO
+     ====================================================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-kicker sr">
+      <span class="eyebrow">Mixtery — Music Production Studio</span>
+    </div>
+
+    <h1 class="hero-h1 sr sr-d1">
+      あなたの音を、<br>世界水準へ。
+      <span class="light">Professional BGM &amp; Sync Tracks.</span>
+    </h1>
+
+    <p class="hero-sub sr sr-d2">
+      YouTubeショートBGM・ライブ用同期音源・歌ってみたMix——<br>
+      評価⭐ 4.9、実績700件超のプロエンジニアが即日対応。<br>
+      AI技術とDAWの融合で、制作の限界を突破します。
+    </p>
+
+    <div class="hero-actions sr sr-d3">
+      <a href="#services" class="btn btn-fill">
+        サービスを見る
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5h9M8 3l3.5 3.5L8 10"/></svg>
+      </a>
+      <a href="https://lin.ee/unixuFG"  class="btn btn-outline">
+        無料相談 (LINE)
+      </a>
+    </div>
+
+    <div class="hero-badges sr sr-d4">
+      <div>
+        <div class="badge-num">700<sup style="font-size:.5em;font-weight:300;">+</sup></div>
+        <div class="badge-lbl">Completed Projects</div>
+      </div>
+      <div>
+        <div class="badge-num">4.9</div>
+        <div class="badge-lbl">CrowdWorks Rating</div>
+      </div>
+      <div>
+        <div class="badge-num">即日</div>
+        <div class="badge-lbl">Quick Delivery</div>
+      </div>
+      <div>
+        <div class="badge-num">∞</div>
+        <div class="badge-lbl">Revisions Included</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- signature waveform -->
+  <div class="wave-wrap" aria-hidden="true">
+    <svg width="100%" height="110" viewBox="0 0 1440 110" preserveAspectRatio="none">
+      <path class="wave-path" d="M0,55 L16,55 L20,22 L24,88 L28,15 L32,95 L36,30 L40,80 L44,48 L48,68 L52,40 L56,74 L60,32 L64,82 L68,50 L72,60 L76,38 L80,76 L84,26 L88,90 L92,44 L96,70 L100,34 L104,80 L108,50 L112,65 L116,38 L120,74 L124,28 L128,86 L132,48 L136,66 L140,36 L144,78 L148,44 L152,68 L156,30 L160,84 L164,52 L168,62 L172,38 L176,76 L180,24 L184,90 L188,46 L192,70 L196,32 L200,82 L204,50 L208,65 L212,36 L216,78 L220,44 L224,66 L228,28 L232,88 L236,52 L240,60 L244,40 L248,74 L252,22 L256,92 L260,48 L264,68 L268,30 L272,84 L276,52 L280,62 L284,38 L288,76 L292,26 L296,88 L300,46 L304,70 L308,32 L312,80 L316,50 L320,64 L324,36 L328,76 L332,44 L336,66 L340,28 L344,88 L348,52 L352,60 L356,38 L360,74 L364,24 L368,90 L372,46 L376,70 L380,32 L384,80 L388,48 L392,65 L396,36 L400,76 L404,42 L408,68 L412,26 L416,88 L420,50 L424,62 L428,38 L432,74 L436,22 L440,92 L444,48 L448,66 L452,30 L456,84 L460,52 L464,60 L468,38 L472,76 L476,26 L480,88 L484,44 L488,70 L492,32 L496,80 L500,50 L504,64 L508,36 L512,76 L516,44 L520,66 L524,28 L528,86 L532,48 L536,62 L540,36 L544,78 L548,24 L552,90 L556,48 L560,66 L564,30 L568,82 L572,50 L576,62 L580,38 L584,74 L588,24 L592,90 L596,46 L600,70 L604,32 L608,80 L612,48 L616,64 L620,36 L624,76 L628,44 L632,66 L636,26 L640,88 L644,50 L648,62 L652,38 L656,74 L660,22 L664,92 L668,48 L672,66 L676,30 L680,84 L684,52 L688,60 L692,36 L696,78 L700,26 L704,88 L708,44 L712,70 L716,32 L720,80 L724,48 L728,64 L732,36 L736,76 L740,44 L744,66 L748,28 L752,86 L756,50 L760,60 L764,38 L768,74 L772,24 L776,90 L780,46 L784,70 L788,32 L792,82 L796,50 L800,64 L804,36 L808,76 L812,42 L816,68 L820,26 L824,88 L828,48 L832,62 L836,38 L840,76 L844,24 L848,90 L852,46 L856,68 L860,28 L864,84 L868,52 L872,62 L876,36 L880,78 L884,24 L888,90 L892,44 L896,70 L900,30 L904,80 L908,48 L912,62 L916,36 L920,76 L924,44 L928,64 L932,26 L936,88 L940,50 L944,60 L948,36 L952,76 L956,22 L960,90 L964,46 L968,70 L972,32 L976,82 L980,50 L984,64 L988,34 L992,78 L996,44 L1000,66 L1004,28 L1008,86 L1012,50 L1016,62 L1020,36 L1024,76 L1028,24 L1032,90 L1036,48 L1040,66 L1044,28 L1048,84 L1052,50 L1056,60 L1060,38 L1064,76 L1068,24 L1072,88 L1076,44 L1080,70 L1084,30 L1088,80 L1092,48 L1096,64 L1100,36 L1104,76 L1108,42 L1112,68 L1116,26 L1120,88 L1124,50 L1128,62 L1132,38 L1136,74 L1140,22 L1144,92 L1148,46 L1152,68 L1156,30 L1160,82 L1164,50 L1168,60 L1172,36 L1176,78 L1180,26 L1184,88 L1188,44 L1192,70 L1196,30 L1200,80 L1204,48 L1208,62 L1212,34 L1216,76 L1220,44 L1224,66 L1228,28 L1232,86 L1236,48 L1240,62 L1244,36 L1248,78 L1252,24 L1256,90 L1260,46 L1264,68 L1268,28 L1272,84 L1276,50 L1280,62 L1284,36 L1288,76 L1292,22 L1296,90 L1300,48 L1304,68 L1308,28 L1312,84 L1316,50 L1320,60 L1324,36 L1328,76 L1332,24 L1336,88 L1340,46 L1344,70 L1348,30 L1352,80 L1356,50 L1360,62 L1364,34 L1368,76 L1372,44 L1376,66 L1380,55 L1440,55"/>
+    </svg>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     SERVICES (tabbed)
+     ====================================================== -->
+<section id="services">
+  <div class="wrap">
+    <div class="sec-hdr sr">
+      <div>
+        <p class="eyebrow">Services &amp; Products</p>
+        <h2 class="sec-title">全サービス一覧</h2>
+      </div>
+      <p class="sec-desc">
+        YouTubeショートBGMから同期音源・歌ってみたMixまで、すべてのニーズに対応。まとめ買いほどお得なセット価格もご用意しています。
+      </p>
+    </div>
+
+    <!-- TAB NAV -->
+    <div class="cat-tabs sr sr-d1" role="tablist">
+      <button class="cat-tab active" data-tab="bgm" role="tab">YouTube BGM</button>
+      <button class="cat-tab" data-tab="sync" role="tab">同期音源</button>
+      <button class="cat-tab" data-tab="mix" role="tab">歌ってみたMix</button>
+      <button class="cat-tab" data-tab="master" role="tab">Mix&amp;Master</button>
+    </div>
+
+    <!-- ---- PANEL: YouTube BGM ---- -->
+    <div class="panel active" id="tab-bgm">
+      <div class="p-grid">
+
+        <!-- 90秒 × 1曲 -->
+        <article class="p-card sr sr-d1">
+          <span class="p-card-badge">MOST POPULAR</span>
+          <div class="p-inner">
+            <span class="p-type">Short Video BGM</span>
+            <h3 class="p-title">ショート動画向けBGM制作（90秒）</h3>
+            <p class="p-desc">使われやすい構成でオリジナルBGMを制作。ご自身のYouTubeチャンネル専用楽曲として、TuneCoreへの登録も可能。楽曲生成AI・フリー音源は一切不使用。</p>
+            <ul class="p-includes">
+              <li>修正回数 無制限</li>
+              <li>ピッチ &amp; タイミング補正</li>
+              <li>コンプ / リバーブ / EQ / ディエッサー処理</li>
+              <li>キー変更・エンコード修正対応</li>
+              <li>即日納品</li>
+            </ul>
+            <div class="p-price">¥3,000</div>
+            <div class="p-price-note">税込 · デジタルダウンロード</div>
+            <a href="https://mix-mastery.stores.jp/items/678108766857f8098f8f3632"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 90秒 × 3曲 -->
+        <article class="p-card sr sr-d2">
+          <div class="p-inner">
+            <span class="p-type">Short Video BGM · Set</span>
+            <h3 class="p-title">【3曲セット】ショート動画向けBGM（90秒）</h3>
+            <p class="p-desc">90秒BGMを3曲まとめて依頼するセットプラン。チャンネルの複数コンテンツへの対応、シリーズ展開にも最適。</p>
+            <div class="p-price">¥9,000</div>
+            <div class="p-price-note">税込 · 1曲あたり ¥3,000</div>
+            <a href="https://mix-mastery.stores.jp/items/68394cee8fb59e1158cb897d"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 90秒 × 5曲 -->
+        <article class="p-card sr sr-d3">
+          <div class="p-inner">
+            <span class="p-type">Short Video BGM · Bundle</span>
+            <h3 class="p-title">【5曲セット】ショート動画向けBGM（90秒）</h3>
+            <p class="p-desc">90秒BGMの5曲まとめ依頼。大量コンテンツ展開・チャンネル立ち上げ期の楽曲ストック構築にも。</p>
+            <div class="p-price">¥15,000</div>
+            <div class="p-price-note">税込 · 1曲あたり ¥3,000</div>
+            <a href="https://mix-mastery.stores.jp/items/698eb53184ab9a1535f0c55b"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 3分 × 1曲 -->
+        <article class="p-card sr sr-d1">
+          <span class="p-card-badge hot">HOT</span>
+          <div class="p-inner">
+            <span class="p-type">Long-form BGM</span>
+            <h3 class="p-title">YouTube・配信向けBGM制作（3分）</h3>
+            <p class="p-desc">審査を意識した構成で制作する3分尺のBGM。YouTube・各種配信プラットフォームへの登録・TuneCore申請を想定した高品質仕上げ。</p>
+            <ul class="p-includes">
+              <li>審査通過を意識した楽曲構成</li>
+              <li>高品質ミックス・マスタリング仕上げ</li>
+              <li>修正回数 無制限</li>
+            </ul>
+            <div class="p-price">¥5,000</div>
+            <div class="p-price-note">税込 · デジタルダウンロード</div>
+            <a href="https://mix-mastery.stores.jp/items/69ec632e40ad5c45120874b1"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 3分 × 3曲 -->
+        <article class="p-card sr sr-d2">
+          <div class="p-inner">
+            <span class="p-type">Long-form BGM · Set</span>
+            <h3 class="p-title">【3曲セット】YouTube・配信向けBGM（3分）</h3>
+            <p class="p-desc">3分BGMを3曲まとめて依頼するセットプラン。配信プラットフォーム向けの楽曲ラインナップ構築に。</p>
+            <div class="p-price">¥15,000</div>
+            <div class="p-price-note">税込 · 1曲あたり ¥5,000</div>
+            <a href="https://mix-mastery.stores.jp/items/69ec6362921a7024424750ac"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 3分 × 5曲 -->
+        <article class="p-card sr sr-d3">
+          <div class="p-inner">
+            <span class="p-type">Long-form BGM · Bundle</span>
+            <h3 class="p-title">【5曲セット】YouTube・配信向けBGM（3分）</h3>
+            <p class="p-desc">3分BGMの5曲まとめ依頼バンドル。TuneCore登録を視野に入れた配信用楽曲の一括制作に対応。</p>
+            <div class="p-price">¥25,000</div>
+            <div class="p-price-note">税込 · 1曲あたり ¥5,000</div>
+            <a href="https://mix-mastery.stores.jp/items/69ec63f173db3dde7521b4a6"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 買取 -->
+        <article class="p-card sr sr-d1">
+          <span class="p-card-badge new">NEW</span>
+          <div class="p-inner">
+            <span class="p-type">BGM · Buy-out</span>
+            <h3 class="p-title">【買取】ショート動画向けBGM制作</h3>
+            <p class="p-desc">1曲 ¥1,100 で提供する買い取り型BGMプラン。クオリティはそのままに、よりリーズナブルな価格でショートBGMを手に入れたい方向け。</p>
+            <div class="p-price">¥1,100</div>
+            <div class="p-price-note">税込 · 1曲あたり</div>
+            <a href="https://mix-mastery.stores.jp/items/6a25091c4c3d4ebce99a9acc"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 90秒→3分 延長 -->
+        <article class="p-card sr sr-d2">
+          <div class="p-inner">
+            <span class="p-type">Add-on</span>
+            <h3 class="p-title">【3分への延長】90秒BGMの追加商品</h3>
+            <p class="p-desc">すでに注文済みの90秒BGMを3分に延長するオプション。既存楽曲のバリエーション展開・配信向け尺への変換にご利用ください。</p>
+            <div class="p-price">¥2,000</div>
+            <div class="p-price-note">税込 · 追加オプション</div>
+            <a href="https://mix-mastery.stores.jp/items/69ec65c773db3de13721b50e"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- 修正 -->
+        <article class="p-card sr sr-d3">
+          <div class="p-inner">
+            <span class="p-type">Add-on</span>
+            <h3 class="p-title">【契約終了後の修正】ショートBGM</h3>
+            <p class="p-desc">契約終了後に追加修正が必要になった場合の対応プラン。納品済み楽曲の細部調整・再エンコード対応にご利用いただけます。</p>
+            <div class="p-price">¥2,000</div>
+            <div class="p-price-note">税込 · 修正対応</div>
+            <a href="https://mix-mastery.stores.jp/items/67d2a27fb62a5f5da2861f3c"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+      </div><!-- /p-grid -->
+    </div><!-- /panel bgm -->
+
+
+    <!-- ---- PANEL: 同期音源 ---- -->
+    <div class="panel" id="tab-sync">
+      <p class="eyebrow sr" style="margin-bottom:1.5rem;">既存カバー楽曲の同期音源を即日購入・オーダーメイド制作も対応</p>
+
+      <!-- オーダーメイド制作 -->
+      <div class="p-grid sr sr-d1" style="margin-bottom:1px;">
+        <article class="p-card">
+          <div class="p-inner">
+            <span class="p-type">Custom Order</span>
+            <h3 class="p-title">同期音源 オーダーメイド制作</h3>
+            <p class="p-desc">ライブ・イベント用の同期音源をオーダーメイドで制作。必要なトラック構成・テンポ・キーをヒアリングしてから制作開始。パラデータ対応も可能。</p>
+            <ul class="p-includes">
+              <li>修正回数 無制限</li>
+              <li>テンポ・キー指定可</li>
+              <li>パラデータ（トラック別納品）対応</li>
+              <li>即日〜数日で納品</li>
+            </ul>
+            <div class="p-price">¥8,000 〜</div>
+            <div class="p-price-note">税込 · 内容により変動（最大 ¥32,000）</div>
+            <a href="https://mix-mastery.stores.jp/items/6669980f3626e405da7eafd6"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- Logic Pro プロジェクトファイル -->
+        <article class="p-card">
+          <span class="p-card-badge new">NEW</span>
+          <div class="p-inner">
+            <span class="p-type">Project File</span>
+            <h3 class="p-title">同期音源 プロジェクトファイル（Logic Pro）</h3>
+            <p class="p-desc">完成した同期音源のLogic Proプロジェクトファイルをそのまま購入可能。自分でアレンジ・編集したい方、DAWを学習中の方にも最適。</p>
+            <div class="p-price">¥7,000</div>
+            <div class="p-price-note">税込 · Logic Pro .logicx ファイル</div>
+            <a href="https://mix-mastery.stores.jp/items/6a34946f0faafe9e4b148da0"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+      </div>
+
+      <!-- 既製トラック一覧 -->
+      <div class="track-list sr sr-d2" style="margin-top:2rem;">
+        <div class="track-row" style="background:var(--pale); pointer-events:none;">
+          <span class="track-num mono" style="opacity:.35;font-size:.58rem;letter-spacing:.12em;">#</span>
+          <span class="eyebrow">楽曲タイトル</span>
+          <span class="eyebrow">アーティスト</span>
+          <span class="eyebrow">価格</span>
+        </div>
+        <div class="track-row">
+          <span class="track-num">01</span>
+          <div>
+            <div class="track-title">私は最強</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">Ado</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666daa93dad01e1fe03e68ff"  class="track-btn">購入</a>
+        </div>
+        <div class="track-row">
+          <span class="track-num">02</span>
+          <div>
+            <div class="track-title">逆夢</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">King Gnu</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666951e6ff050401284587c6"  class="track-btn">購入</a>
+        </div>
+        <div class="track-row">
+          <span class="track-num">03</span>
+          <div>
+            <div class="track-title">新時代</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">Ado</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666daacae88e810d056c8497"  class="track-btn">購入</a>
+        </div>
+        <div class="track-row">
+          <span class="track-num">04</span>
+          <div>
+            <div class="track-title">逆光</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">King Gnu</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666daa59e88e810d056c845a"  class="track-btn">購入</a>
+        </div>
+        <div class="track-row">
+          <span class="track-num">05</span>
+          <div>
+            <div class="track-title">花占い</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">back number</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666daa33dad01e1f963e69b9"  class="track-btn">購入</a>
+        </div>
+        <div class="track-row">
+          <span class="track-num">06</span>
+          <div>
+            <div class="track-title">花一匁</div>
+            <div class="track-artist mono" style="font-size:.62rem;opacity:.4;margin-top:.1rem;">和楽器バンド</div>
+          </div>
+          <div class="track-price">¥1,500</div>
+          <a href="https://mix-mastery.stores.jp/items/666da9fb12e4fd18ca745796"  class="track-btn">購入</a>
+        </div>
+      </div>
+
+      <p class="sr sr-d3" style="font-size:.78rem;color:var(--muted);margin-top:1.2rem;line-height:1.8;">
+        ※ 取り扱い楽曲は随時追加中。ご希望の楽曲がない場合はオーダーメイド制作をご利用ください。<br>
+        <a href="https://lin.ee/unixuFG"  style="text-decoration:underline;color:var(--ink);">公式LINEからリクエスト →</a>
+      </p>
+    </div><!-- /panel sync -->
+
+
+    <!-- ---- PANEL: 歌ってみたMix ---- -->
+    <div class="panel" id="tab-mix">
+      <div class="p-grid">
+        <article class="p-card sr sr-d1">
+          <div class="p-inner">
+            <span class="p-type">Vocal Mix</span>
+            <h3 class="p-title">歌ってみたMix</h3>
+            <p class="p-desc">収録済みボーカルのMixをプロが担当。ピッチ補正・タイミング補正・各種エフェクト処理・マスタリングまで一括対応。</p>
+            <ul class="p-includes">
+              <li>修正回数 無制限</li>
+              <li>ピッチ補正（メロダイン / Auto-Tune）</li>
+              <li>タイミング補正</li>
+              <li>EQ / コンプ / リバーブ / ディエッサー処理</li>
+              <li>マスタリング仕上げ</li>
+            </ul>
+            <div class="p-price">¥7,000</div>
+            <div class="p-price-note">税込 · 1曲</div>
+            <a href="https://mix-mastery.stores.jp/items/666970d8f0a6af00c7ef8ba2"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="p-card sr sr-d2">
+          <div class="p-inner">
+            <span class="p-type">Vocal Mix + Inst</span>
+            <h3 class="p-title">歌ってみた（inst音源制作 ＋ Mix）</h3>
+            <p class="p-desc">inst音源が手元にない方向けのフルパッケージ。カラオケ音源の制作からボーカルMixまで一括依頼可能。完全オリジナル仕上がりのカバー制作を実現。</p>
+            <ul class="p-includes">
+              <li>inst音源（カラオケ音源）制作</li>
+              <li>ボーカルMix・マスタリング</li>
+              <li>修正回数 無制限</li>
+            </ul>
+            <div class="p-price">¥8,000 〜</div>
+            <div class="p-price-note">税込 · 内容により変動（最大 ¥40,000）</div>
+            <a href="https://mix-mastery.stores.jp/items/6669761d39cb4e0140a989a8"  class="p-link">
+              注文する
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+      </div>
+    </div><!-- /panel mix -->
+
+
+    <!-- ---- PANEL: Mix & Mastering ---- -->
+    <div class="panel" id="tab-master">
+      <div class="p-grid">
+        <article class="p-card sr sr-d1">
+          <div class="p-inner">
+            <span class="p-type">Mix &amp; Mastering</span>
+            <h3 class="p-title">ミックス &amp; マスタリング</h3>
+            <p class="p-desc">楽曲のMix・マスタリングをプロが担当。音源の質を最大限に引き出し、配信・リリースに耐えうるクオリティに仕上げます。</p>
+            <ul class="p-includes">
+              <li>パラデータ / ステムデータ対応</li>
+              <li>修正回数 無制限</li>
+              <li>配信プラットフォーム規格への最適化</li>
+            </ul>
+            <div class="p-price" style="font-size:1.1rem;font-weight:700;">
+              詳細はSTORESへ
+            </div>
+            <div class="p-price-note">税込 · 内容により変動</div>
+            <a href="https://mix-mastery.stores.jp/?category_id=666971d31c72b4000188907b"  class="p-link">
+              プランを見る
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+            </a>
+          </div>
+        </article>
+      </div>
+    </div><!-- /panel master -->
+
+  </div>
+</section>
+
+
+<!-- ======================================================
+     COUPON BAND
+     ====================================================== -->
+<div class="coupon-band">
+  <div class="wrap">
+    <div class="coupon-inner sr">
+      <div class="coupon-copy">
+        <p class="eyebrow">Limited Offer</p>
+        <h2>初回注文 20% OFF</h2>
+        <p>
+          Mixtery公式サイトで初めてご注文の方限定。<br>
+          クーポンコードをご注文時に入力してください。<br>
+          友達紹介割との併用は不可。お一人様1回限り有効。
+        </p>
+      </div>
+      <div class="coupon-box">
+        <div class="coupon-label">COUPON CODE</div>
+        <div class="coupon-code">OXuIcWP0EC</div>
+        <div class="coupon-note">初回注文時にご入力ください</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================================================
+     FLOW
+     ====================================================== -->
+<section class="flow-section" id="flow">
+  <div class="wrap">
+    <div class="sec-hdr sr">
+      <div>
+        <p class="eyebrow">How it works</p>
+        <h2 class="sec-title">かんたん4ステップ</h2>
+      </div>
+      <p class="sec-desc">ご購入から納品まで、公式LINEで全てのやり取りを完結。面倒な登録不要で、すぐに制作を開始できます。</p>
+    </div>
+    <div class="flow-grid">
+      <div class="flow-card sr sr-d1">
+        <div class="flow-n">STEP 01</div>
+        <div class="flow-icon">🛒</div>
+        <div class="flow-title">サービスを購入</div>
+        <div class="flow-body">ご希望のサービスをカートに追加し、クレカ・PayPay・コンビニ決済など各種方法でご購入ください。</div>
+      </div>
+      <div class="flow-card sr sr-d2">
+        <div class="flow-n">STEP 02</div>
+        <div class="flow-icon">💬</div>
+        <div class="flow-title">LINEで連絡</div>
+        <div class="flow-body">注文完了メールに記載の「オーダー番号」を公式LINEアカウントへ送信してください。</div>
+      </div>
+      <div class="flow-card sr sr-d3">
+        <div class="flow-n">STEP 03</div>
+        <div class="flow-icon">🎛️</div>
+        <div class="flow-title">打ち合わせ・制作開始</div>
+        <div class="flow-body">LINE上でご要望をヒアリング。参考音源の共有後、制作を開始します。修正は何度でも対応。</div>
+      </div>
+      <div class="flow-card sr sr-d4">
+        <div class="flow-n">STEP 04</div>
+        <div class="flow-icon">📦</div>
+        <div class="flow-title">Google Driveで納品</div>
+        <div class="flow-body">完成後はGoogle Driveにてデータを納品。修正がなければ正式納品として完了となります。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     ABOUT
+     ====================================================== -->
+<section class="about-section" id="about">
+  <div class="wrap">
+    <div class="sec-hdr sr">
+      <div>
+        <p class="eyebrow">About Mixtery</p>
+        <h2 class="sec-title">なぜMixteryを<br>選ぶのか。</h2>
+      </div>
+      <p class="sec-desc">
+        クラウドワークスでの700件超の実績と評価4.9を支えるのは、AIを道具として使いこなしながらも、人の表現を最優先に置く制作哲学です。
+      </p>
+    </div>
+
+    <div class="about-grid">
+      <div class="stat-block-wrap sr">
+        <div class="stat-block">
+          <div class="stat-n">700<span style="font-size:.5em;font-weight:300;">+</span></div>
+          <div class="stat-l">Completed Projects</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-n">4.9</div>
+          <div class="stat-l">CrowdWorks Rating</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-n">即日</div>
+          <div class="stat-l">Quick Delivery</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-n">∞</div>
+          <div class="stat-l">Revisions OK</div>
+        </div>
+      </div>
+
+      <div class="about-body sr sr-d1">
+        <h3>AI × エンジニアリングで、<br>音楽制作の常識を変える。</h3>
+        <p>楽曲生成AIもフリー音源も使わない。すべての楽曲はDAWとプロの技術によってゼロから制作されます。AIは「クリエイターの補助ツール」として活用し、最終的な音質・表現はエンジニアの耳と技術が担保します。</p>
+        <p>YouTubeショートBGMはTuneCoreへの登録実績も700件超。審査通過率の高い楽曲制作ノウハウを蓄積し、クリエイターの収益化を支援しています。</p>
+        <div class="about-tags">
+          <span class="tag-pill">YouTube Short BGM</span>
+          <span class="tag-pill">ライブ同期音源</span>
+          <span class="tag-pill">歌ってみたMix</span>
+          <span class="tag-pill">TuneCore 登録</span>
+          <span class="tag-pill">AI Workflow</span>
+          <span class="tag-pill">DAW Recording</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     SNS
+     ====================================================== -->
+<div class="sns-section">
+  <div class="wrap">
+    <p class="eyebrow sr" style="margin-bottom:1.2rem;">Follow &amp; Connect</p>
+    <div class="sns-grid sr sr-d1">
+      <a href="https://lin.ee/unixuFG"  class="sns-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        公式LINE
+      </a>
+      <a href="https://youtube.com/@mix__tery?feature=shared"  class="sns-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        YouTube
+      </a>
+      <a href="https://x.com/Mix_Mastery"  class="sns-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.258 5.632 5.907-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X (Twitter)
+      </a>
+      <a href="https://instagram.com/Mix__Mastery/"  class="sns-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        Instagram
+      </a>
+      <a href="https://crowdworks.jp/public/employees/5930361/"  class="sns-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        CrowdWorks 実績
+      </a>
+      <a href="https://mix-mastery.stores.jp/inquiry"  class="sns-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        お問い合わせ
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================================================
+     FOOTER
+     ====================================================== -->
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div>
+        <div class="footer-brand">Mixtery</div>
+        <div class="footer-tagline">BGM Production / Sync Tracks / Mix &amp; Mastering</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://mix-mastery.stores.jp/tokushoho" >特定商取引法に基づく表示</a>
+        <a href="https://mix-mastery.stores.jp/terms" >利用規約</a>
+        <a href="https://mix-mastery.stores.jp/privacy_policy" >プライバシーポリシー</a>
+        <a href="https://mix-mastery.stores.jp/inquiry" >お問い合わせ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Mixtery. All rights reserved.</p>
+      <p>mix-mastery.stores.jp</p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ======================================================
+     JAVASCRIPT
+     ====================================================== -->
+<script>
+/* --- hamburger --- */
+const hbg = document.getElementById('hbg');
+const nav = document.getElementById('nav');
+hbg.addEventListener('click', () => nav.classList.toggle('open'));
+hbg.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); nav.classList.toggle('open'); } });
+nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+
+/* --- scroll reveal --- */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.sr').forEach(el => io.observe(el));
+
+/* --- tabs --- */
+const tabs = document.querySelectorAll('.cat-tab');
+const panels = document.querySelectorAll('.panel');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const target = document.getElementById('tab-' + tab.dataset.tab);
+    if(target) {
+      target.classList.add('active');
+      // trigger sr for newly visible elements
+      target.querySelectorAll('.sr:not(.in)').forEach(el => {
+        setTimeout(() => { if(!el.classList.contains('in')) io.observe(el); }, 10);
+      });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
