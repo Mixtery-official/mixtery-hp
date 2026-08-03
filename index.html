@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mixtery — Every Space Has a Sound.</title>
 <meta name="description" content="空間全体の音体験をデザインする、日本発のサウンドブランディング・カンパニー。">
-<link rel="icon" href="favicon.png" type="image/png">
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Inter:wght@300;400;500;600;700&display=swap");
 /* ─────────────────────────────────────────
    TOKENS
 ───────────────────────────────────────── */
@@ -20,8 +20,8 @@
   --pale:    #f7f7f7;
   --gold:    #b8975a;
   --gold-d:  #8a6f3e;
-  --serif:   Georgia,"Times New Roman","Hiragino Mincho ProN",serif;
-  --sans:    -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,"Hiragino Sans","Yu Gothic",sans-serif;
+  --serif:   "Playfair Display",Georgia,"Times New Roman","Hiragino Mincho ProN",serif;
+  --sans:    "Inter",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,"Hiragino Sans","Yu Gothic",sans-serif;
   --mono:    "SF Mono","Fira Mono","Courier New",monospace;
   --ease:    cubic-bezier(.25,.46,.45,.94);
   --ease-o:  cubic-bezier(.16,1,.3,1);
@@ -47,36 +47,40 @@ ul { list-style:none; }
 #intro {
   position: fixed; inset: 0; z-index: 9999;
   background: #fff;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: .6rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .2rem; overflow: hidden;
   pointer-events: auto;
-  transition: opacity 1.2s var(--ease-o);
+  transition: opacity 1.4s var(--ease-o);
 }
 #intro.out { opacity:0; pointer-events:none; }
 
-.i-logo {
-  font-family: var(--mono);
-  font-size: .78rem; letter-spacing: .5em;
-  text-transform: uppercase; color: var(--ink);
-  opacity: 0; animation: fadeUp .9s var(--ease-o) .3s forwards;
+#introCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
 }
-.i-tagline {
+
+.i-head {
   font-family: var(--serif);
-  font-size: clamp(.9rem,2vw,1.1rem);
-  font-style: italic; color: var(--ink-2);
-  opacity: 0; animation: fadeUp .9s var(--ease-o) .7s forwards;
+  font-size: clamp(2rem, 6vw, 4.8rem);
+  font-weight: 900; font-style: italic;
+  letter-spacing: -.02em; line-height: 1.08;
+  text-align: center;
+  color: var(--ink);
+  position: relative; z-index: 2;
+  opacity: 0; animation: fadeUp 1.2s var(--ease-o) .4s forwards;
 }
-.i-prog {
-  margin-top: 2rem;
-  width: 80px; height: 1px;
-  background: var(--rule);
-  overflow: hidden;
+.i-head em { color: var(--gold); font-style: italic; }
+
+.i-credit {
+  font-family: var(--mono);
+  font-size: .62rem; letter-spacing: .55em; text-transform: uppercase;
+  color: var(--gold);
+  position: relative; z-index: 2;
+  margin-top: 1.6rem;
+  opacity: 0; animation: fadeUp .8s var(--ease-o) 1.4s forwards;
 }
-.i-prog span {
-  display: block; height: 100%; width: 0;
-  background: var(--gold);
-}
+
 @keyframes fadeUp {
   from { opacity:0; transform:translateY(10px); }
   to   { opacity:1; transform:translateY(0); }
@@ -191,49 +195,100 @@ ul { list-style:none; }
 .btn:hover svg, .btn-ol:hover svg { transform:translateX(3px); }
 
 /* ─────────────────────────────────────────
+   WAVE DECORATION
+───────────────────────────────────────── */
+.wave-divider {
+  width:100%; height:64px; display:block;
+  overflow:hidden; line-height:0;
+}
+.wave-divider svg { width:100%; height:100%; }
+
+/* Animated waveform bar strip */
+.waveform-strip {
+  width:100%; height:48px;
+  display:flex; align-items:flex-end; justify-content:center;
+  gap:2px; padding:0 0 0 0;
+  overflow:hidden;
+}
+.waveform-strip span {
+  display:block; flex:1; max-width:4px;
+  background:var(--ink); opacity:.1;
+  border-radius:1px 1px 0 0;
+  animation: wbar var(--wd,.9s) ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+.waveform-strip.gold span { background:var(--gold); opacity:.35; }
+.waveform-strip.white span { background:#fff; opacity:.18; }
+@keyframes wbar {
+  from { transform: scaleY(.08); }
+  to   { transform: scaleY(1); }
+}
+
+/* Inline canvas wave */
+.wave-canvas-wrap {
+  width:100%; height:56px; position:relative; overflow:hidden;
+}
+.wave-canvas-wrap canvas { width:100%; height:100%; display:block; }
+
+/* ─────────────────────────────────────────
    HERO
 ───────────────────────────────────────── */
 .hero {
   min-height: 100svh;
   padding-top: 56px;
-  display: flex; flex-direction:column; justify-content:center;
-  border-bottom: 1px solid var(--rule);
+  display: flex; flex-direction:column; justify-content:flex-end;
   position:relative; overflow:hidden;
+}
+/* Full-bleed canvas wave behind hero */
+#heroCanvas {
+  position:absolute; bottom:0; left:0; right:0;
+  width:100%; height:220px;
+  pointer-events:none; opacity:.12;
 }
 .hero-inner {
   position:relative; z-index:2;
-  padding: 80px 5vw;
+  padding: 0 5vw 0;
   max-width:1080px; margin:0 auto; width:100%;
-  display:grid; grid-template-columns:1fr 1fr; gap:5vw; align-items:center;
+  display:flex; flex-direction:column; justify-content:center;
+  min-height: calc(100svh - 56px);
+  padding-top: 60px;
+  padding-bottom: 80px;
 }
-@media(max-width:720px){ .hero-inner{grid-template-columns:1fr;gap:3rem;} }
-
-.hero-copy {}
-.hero-kicker { display:flex; align-items:center; gap:.7rem; margin-bottom:1.6rem; }
+.hero-kicker { display:flex; align-items:center; gap:.7rem; margin-bottom:2rem; }
 .hero-kicker .gold-bar { margin:0; }
+/* HERO H1 — intentionally large */
 .hero-h1 {
-  font-size: clamp(1.8rem,3.5vw,2.8rem);
-  font-weight: 800; line-height:1.12; letter-spacing:-.03em;
-  margin-bottom:1rem; color:var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(3.2rem,7.5vw,6.5rem);
+  font-weight: 900; font-style: italic;
+  line-height:1.02; letter-spacing:-.03em;
+  margin-bottom:1.2rem; color:var(--ink);
 }
 .hero-h1-en {
   display:block; font-family:var(--mono);
-  font-size:.58rem; letter-spacing:.22em; text-transform:uppercase;
-  color:var(--gold); margin-bottom:1.4rem;
+  font-size:.62rem; letter-spacing:.26em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:1.6rem;
 }
 .hero-desc {
-  font-size:.84rem; line-height:1.95; color:var(--ink-2);
-  margin-bottom:2rem; max-width:40ch;
+  font-size:.88rem; line-height:2; color:var(--ink-2);
+  margin-bottom:2.4rem; max-width:44ch;
 }
 .hero-actions { display:flex; gap:.7rem; flex-wrap:wrap; }
+/* Hero bottom stats strip */
+.hero-bottom {
+  border-top:1px solid var(--rule); margin-top:3.5rem;
+  display:grid; grid-template-columns:repeat(4,1fr);
+}
+@media(max-width:560px){ .hero-bottom{grid-template-columns:repeat(2,1fr);} }
+.hero-bottom .h-stat {
+  padding:1.5rem 0 1.5rem;
+  border-right:1px solid var(--rule);
+  padding-right:1.5rem; margin-right:1.5rem;
+}
+.hero-bottom .h-stat:last-child{border-right:none;padding-right:0;margin-right:0;}
 
 /* stats */
-.hero-stats {
-  display:grid; grid-template-columns:1fr 1fr; gap:1px;
-  background:var(--rule); border:1px solid var(--rule);
-  align-self:start;
-}
-.h-stat { background:var(--bg); padding:1.6rem 1.4rem; }
+.h-stat { }
 .h-num {
   font-size:clamp(1.6rem,2.5vw,2.2rem);
   font-weight:800; letter-spacing:-.03em; line-height:1; color:var(--ink);
@@ -638,9 +693,9 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
 
 <!-- ══ INTRO ══════════════════════════════ -->
 <div id="intro">
-  <p class="i-logo">Mixtery</p>
-  <p class="i-tagline">Every Space Has a Sound.</p>
-  <div class="i-prog"><span id="iBar"></span></div>
+  <canvas id="introCanvas"></canvas>
+  <h2 class="i-head">Every Space<br>Has a <em>Sound.</em></h2>
+  <p class="i-credit">MIXTERY</p>
 </div>
 
 <div id="site">
@@ -662,33 +717,32 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
 
 <!-- ══ HERO ═══════════════════════════════ -->
 <section class="hero">
+  <canvas id="heroCanvas"></canvas>
   <div class="hero-inner">
-    <div class="hero-copy">
-      <div class="hero-kicker sr">
-        <span class="gold-bar"></span>
-        <span class="eyebrow">Audio Experience Design</span>
-      </div>
-      <h1 class="hero-h1 sr d1">
-        空間全体の<br>音体験を<br>デザインする。
-      </h1>
-      <span class="hero-h1-en sr d2">Sound Branding &amp; Music Production</span>
-      <p class="hero-desc sr d3">
-        日本発のサウンドブランディング・カンパニー。<br>
-        AIとプロのエンジニアリングが融合し、<br>
-        空間の「音の物語」を設計します。
-      </p>
-      <div class="hero-actions sr d4">
-        <a href="#why" class="btn">
-          Sound Branding を知る
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
-        </a>
-        <a href="#services" class="btn btn-ol">
-          BGM・Mix サービスへ
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
-        </a>
-      </div>
+    <div class="hero-kicker sr">
+      <span class="gold-bar"></span>
+      <span class="eyebrow">Audio Experience Design</span>
     </div>
-    <div class="hero-stats sr d2">
+    <h1 class="hero-h1 sr d1">
+      空間全体の<br>音体験を<br>デザインする。
+    </h1>
+    <span class="hero-h1-en sr d2">Sound Branding &amp; Music Production</span>
+    <p class="hero-desc sr d3">
+      日本発のサウンドブランディング・カンパニー。<br>
+      AIとプロのエンジニアリングが融合し、<br>
+      空間の「音の物語」を設計します。
+    </p>
+    <div class="hero-actions sr d4">
+      <a href="#why" class="btn">
+        Sound Branding を知る
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+      </a>
+      <a href="#services" class="btn btn-ol">
+        BGM・Mix サービスへ
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5.5h7M6 2l3 3.5L6 9"/></svg>
+      </a>
+    </div>
+    <div class="hero-bottom sr d5">
       <div class="h-stat"><div class="h-num">700<span class="unit">+</span></div><div class="h-lbl">Completed Projects</div></div>
       <div class="h-stat"><div class="h-num">4.9</div><div class="h-lbl">CrowdWorks Rating</div></div>
       <div class="h-stat"><div class="h-num">100<span class="unit">%</span></div><div class="h-lbl">納期遵守率</div></div>
@@ -696,6 +750,8 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
     </div>
   </div>
 </section>
+<!-- Hero bottom waveform strip -->
+<div class="waveform-strip" id="heroWave" style="border-bottom:1px solid var(--rule);height:56px;background:#fff;"></div>
 
 <!-- ══ WHY SOUND ══════════════════════════ -->
 <section class="sec sec-alt" id="why">
@@ -716,15 +772,17 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
   </div>
 </section>
 
+<!-- Wave divider -->
+<div class="waveform-strip" id="wave1" style="background:var(--pale);height:44px;border-top:1px solid var(--rule);"></div>
 <!-- ══ GLOBAL ══════════════════════════════ -->
 <section class="sec">
   <div class="wrap">
     <div class="sr"><div class="gold-bar"></div><p class="eyebrow">Global Sonic Branding</p><h2 class="sec-h" style="margin:1rem 0 2.2rem;">世界のSonic Branding</h2></div>
     <div class="g-grid sr d1">
-      <div class="g-card"><div class="g-dot"></div><div class="g-title">動画配信大手</div><div class="g-body">起動時のサウンドロゴを全世界で統一運用。ブランド認知と感情的な連結を音で実現。</div></div>
-      <div class="g-card"><div class="g-dot"></div><div class="g-title">EVメーカー</div><div class="g-body">走行音そのものをブランド体験として設計。エンジン音のない時代の「音のアイデンティティ」。</div></div>
-      <div class="g-card"><div class="g-dot"></div><div class="g-title">外資系ホテルチェーン</div><div class="g-body">客室・ロビーのアンビエントBGMを標準化。チェックインの瞬間からブランド世界観を演出。</div></div>
-      <div class="g-card"><div class="g-dot"></div><div class="g-title">大手SNSプラットフォーム</div><div class="g-body">通知音・UI音を独自開発しブランド化。聴くだけでサービスを想起させる「音の刷り込み」。</div></div>
+      <div class="g-card"><p class="g-title"><span class="g-dot"></span>動画配信大手</p><p class="g-body">起動時のサウンドロゴを全世界で統一運用。ブランド認知と感情的な連結を音で実現。</p></div>
+      <div class="g-card"><p class="g-title"><span class="g-dot"></span>EVメーカー</p><p class="g-body">走行音そのものをブランド体験として設計。エンジン音のない時代の「音のアイデンティティ」。</p></div>
+      <div class="g-card"><p class="g-title"><span class="g-dot"></span>外資系ホテルチェーン</p><p class="g-body">客室・ロビーのアンビエントBGMを標準化。チェックインの瞬間からブランド世界観を演出。</p></div>
+      <div class="g-card"><p class="g-title"><span class="g-dot"></span>大手SNSプラットフォーム</p><p class="g-body">通知音・UI音を独自開発しブランド化。聴くだけでサービスを想起させる「音の刷り込み」。</p></div>
     </div>
     <p class="g-quote sr d2">音はブランドそのものである。</p>
   </div>
@@ -757,6 +815,8 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
   </div>
 </section>
 
+<!-- Wave divider -->
+<div class="waveform-strip" id="wave2" style="background:#fff;height:44px;border-top:1px solid var(--rule);"></div>
 <!-- ══ SOUND MAP ═══════════════════════════ -->
 <section class="sec">
   <div class="wrap">
@@ -838,6 +898,8 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
   </div>
 </section>
 
+<!-- Wave divider -->
+<div class="waveform-strip" id="wave3" style="background:var(--pale);height:44px;border-top:1px solid var(--rule);"></div>
 <!-- ══ LOBII ════════════════════════════════ -->
 <section class="sec sec-alt">
   <div class="wrap">
@@ -979,25 +1041,55 @@ footer { border-top:1px solid var(--rule); padding:52px 0 40px; }
 </div>
 
 <script>
-/* ── INTRO (4s auto) ─── */
-const INTRO_DUR = 4000;
+/* ── INTRO ─── */
+const INTRO_DUR = 4500;
 const intro = document.getElementById('intro');
 const site  = document.getElementById('site');
-const bar   = document.getElementById('iBar');
 let gone = false;
-
-bar.style.transition = `width ${INTRO_DUR}ms linear`;
-requestAnimationFrame(() => bar.style.width = '100%');
 
 function dismiss() {
   if (gone) return; gone = true;
   intro.classList.add('out');
-  document.body.style.overflow = '';
   site.classList.add('on');
-  setTimeout(() => intro.remove(), 1400);
+  setTimeout(() => intro.remove(), 1500);
 }
 const t = setTimeout(dismiss, INTRO_DUR);
 intro.addEventListener('click', () => { clearTimeout(t); dismiss(); });
+
+/* ── INTRO CANVAS WAVE ─── */
+(function() {
+  const c = document.getElementById('introCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, tc = 0;
+  function resize() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Wave 1 — black, subtle
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(17,17,17,.07)';
+    ctx.lineWidth = 1.3;
+    for (let x = 0; x <= W; x++) {
+      const y = H/2 + H*.12 * Math.sin((x/W)*Math.PI*2*2.5 + tc);
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Wave 2 — gold, thinner
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(184,151,90,.12)';
+    ctx.lineWidth = .9;
+    for (let x = 0; x <= W; x++) {
+      const y = H/2 + H*.07 * Math.sin((x/W)*Math.PI*2*3.8 + tc*1.15 + 1.4);
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    tc += .008;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
 /* ── HAMBURGER ─── */
 const hbg = document.getElementById('hbg');
@@ -1024,6 +1116,69 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
     }
   });
 });
+
+/* ── HERO CANVAS WAVE ─── */
+(function() {
+  const c = document.getElementById('heroCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, t = 0;
+  function resize() {
+    W = c.width = c.offsetWidth;
+    H = c.height = c.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Wave 1 — primary
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(17,17,17,1)';
+    ctx.lineWidth = 1.2;
+    const amp = H * .3, fr = 2.8;
+    for (let x = 0; x <= W; x++) {
+      const y = H/2 + amp * Math.sin((x/W)*Math.PI*2*fr + t) * Math.sin((x/W)*Math.PI*fr*.6 + t*.5);
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Wave 2 — secondary thinner
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(184,151,90,1)';
+    ctx.lineWidth = .8;
+    for (let x = 0; x <= W; x++) {
+      const y = H/2 + amp*.55 * Math.sin((x/W)*Math.PI*2*fr*1.3 + t*1.1 + 1.2) * Math.cos((x/W)*Math.PI*fr*.45 + t*.35);
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    t += .008;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── WAVEFORM BAR STRIPS ─── */
+(function() {
+  const strips = [
+    { id:'heroWave',  cols: Math.floor(window.innerWidth / 7), gold: false },
+    { id:'wave1',     cols: Math.floor(window.innerWidth / 8), gold: true  },
+    { id:'wave2',     cols: Math.floor(window.innerWidth / 8), gold: false },
+    { id:'wave3',     cols: Math.floor(window.innerWidth / 8), gold: true  },
+  ];
+  strips.forEach(({ id, cols, gold }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('waveform-strip');
+    if (gold) el.classList.add('gold');
+    for (let i = 0; i < cols; i++) {
+      const s = document.createElement('span');
+      const dur = (.5 + Math.random() * 1.2).toFixed(2) + 's';
+      s.style.setProperty('--wd', dur);
+      s.style.animationDelay = (Math.random() * 1.1).toFixed(2) + 's';
+      s.style.height = (20 + Math.random() * 80).toFixed(0) + '%';
+      el.appendChild(s);
+    }
+  });
+})();
 </script>
 </body>
 </html>
